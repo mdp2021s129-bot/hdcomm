@@ -1,0 +1,4 @@
+- Remove "control" vs "application" distinction: we don't really need to care
+  about those now that we allow multiple inflight RPCs.
+
+- Implement basic device-side helpers.
