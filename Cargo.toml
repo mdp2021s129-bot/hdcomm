@@ -11,6 +11,3 @@ members = [
     "hdcomm-device",
     "hdcomm-host",
 ]
-
-[dependencies]
-hdcomm-core = { path = "hdcomm-core" }

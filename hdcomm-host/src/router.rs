@@ -97,10 +97,7 @@ impl RouterHandle {
     }
 
     /// Subscribe to an RPC message with the given ID.
-    pub(crate) fn subscribe_rpc(
-        &self,
-        id: u16,
-    ) -> Result<oneshot::Receiver<rpc::Payload>, ()> {
+    pub(crate) fn subscribe_rpc(&self, id: u16) -> Result<oneshot::Receiver<rpc::Payload>, ()> {
         match self.listeners.lock().unwrap().rpc.entry(id) {
             Entry::Occupied(mut oe) => {
                 if oe.get().is_closed() {
@@ -120,13 +117,7 @@ impl RouterHandle {
     }
 
     /// Subscribe to stream messagess.
-    pub(crate) fn subscribe_stream(
-        &self,
-    ) -> broadcast::Receiver<stream::Payload> {
-        self.listeners
-            .lock()
-            .unwrap()
-            .stream
-            .subscribe()
+    pub(crate) fn subscribe_stream(&self) -> broadcast::Receiver<stream::Payload> {
+        self.listeners.lock().unwrap().stream.subscribe()
     }
 }
