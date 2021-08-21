@@ -1,21 +1,23 @@
-/// RPC message payloads.
-pub mod application;
-pub mod control;
-
+/// RPC definitions.
 use serde::{Deserialize, Serialize};
 
-/// Content of a RPC message.
+/// Representation of a RPC message.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct Content {
+pub struct Message {
     /// Message identifier.
     /// Must be the same as the originating message for replies.
     pub id: u16,
     pub payload: Payload,
 }
 
-/// Payload of a RPC message.
+/// The payload of a control RPC message.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub enum Payload {
-    Control(control::Payload),
-    Application(application::Payload),
+    PingReq(PingReqBody),
+    PingRep(PingRepBody),
+    EndReq(EndReqBody),
 }
+
+pub type PingReqBody = ();
+pub type PingRepBody = ();
+pub type EndReqBody = ();

@@ -5,16 +5,16 @@ use serde::{Deserialize, Serialize};
 /// `Message` represents a single exchanged message.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Message {
-    /// Message content.
-    pub content: Content,
+    /// Message payload.
+    pub content: Payload,
     // Reserved for future extensions.
 }
 
 /// `Content` represents the message content.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub enum Content {
+pub enum Payload {
     /// Message is an RPC message.
-    RPC(rpc::Content),
+    RPC(rpc::Message),
     /// Message is a stream message.
-    Stream(stream::Content),
+    Stream(stream::Message),
 }

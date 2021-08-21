@@ -1,15 +1,12 @@
-/// Stream message payloads.
-pub mod application;
+/// Stream definitions.
 use serde::{Deserialize, Serialize};
 
-/// Content of a stream message.
+/// Representation of a stream message.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub struct Content {
+pub struct Message {
     pub payload: Payload,
 }
 
 /// Payload of a stream message.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-pub enum Payload {
-    Application(application::Payload),
-}
+pub enum Payload {}
