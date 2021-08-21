@@ -29,7 +29,8 @@ impl Accumulator {
 /// COBS.
 ///
 /// Calculated as ceil(MAX_MESSAGE_LENGTH / 254).
-pub const ENCODED_BUFFER_SIZE: usize = (hdcomm_core::MAX_MESSAGE_LENGTH / 254)
+pub const ENCODED_BUFFER_SIZE: usize = hdcomm_core::MAX_MESSAGE_LENGTH
+    + (hdcomm_core::MAX_MESSAGE_LENGTH / 254)
     + if (hdcomm_core::MAX_MESSAGE_LENGTH % 254) > 0 {
         1
     } else {
