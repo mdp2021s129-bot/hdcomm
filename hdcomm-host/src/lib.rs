@@ -9,12 +9,12 @@ use futures::StreamExt;
 pub async fn connect(
     path: &str,
     baud_rate: u32,
-) -> Result<(router::Router, impl proxy::ControlProxy), tokio_serial::Error> {
+) -> Result<(router::Router, impl proxy::Proxy), tokio_serial::Error> {
     let framed = channel::new(path, baud_rate).await?;
     let (sink, stream) = framed.split();
 
     let router = router::Router::new(stream);
-    let proxy = proxy::ControlProxyImpl::new(
+    let proxy = proxy::ProxyImpl::new(
         std::sync::Arc::new(tokio::sync::Mutex::new(sink)),
         router::RouterHandle::of(&router),
     );

@@ -8,25 +8,25 @@ use async_trait::async_trait;
 use futures::stream::SplitSink;
 use futures::SinkExt;
 use hdcomm_core::message::{self, Message};
-use hdcomm_core::rpc::{self, control};
+use hdcomm_core::rpc;
 use std::sync::Arc;
 
-/// `ControlProxy` exposes control RPC requests.
+/// `Proxy` exposes RPC requests.
 #[async_trait]
-pub trait ControlProxy {
-    async fn ping(&self) -> Result<control::PingRepBody, RPCError>;
+pub trait Proxy {
+    async fn ping(&self) -> Result<rpc::PingRepBody, RPCError>;
     async fn end(&self) -> Result<(), RPCError>;
 }
 
-/// `ControlProxyImpl` implements a control RPC proxy.
+/// `ProxyImpl` implements a RPC proxy.
 #[derive(Clone)]
-pub(crate) struct ControlProxyImpl {
+pub(crate) struct ProxyImpl {
     sink: Arc<tokio::sync::Mutex<SplitSink<FramedChannel, Message>>>,
     id: Arc<std::sync::Mutex<u16>>,
     router: RouterHandle,
 }
 
-impl ControlProxyImpl {
+impl ProxyImpl {
     pub(crate) fn new(
         sink: Arc<tokio::sync::Mutex<SplitSink<FramedChannel, Message>>>,
         router: RouterHandle,
@@ -46,14 +46,14 @@ impl ControlProxyImpl {
 }
 
 #[async_trait]
-impl ControlProxy for ControlProxyImpl {
+impl Proxy for ProxyImpl {
     async fn end(&self) -> Result<(), RPCError> {
         let id = self.gen_id();
 
         let message = Message {
-            content: message::Content::RPC(rpc::Content {
+            content: message::Payload::RPC(rpc::Message {
                 id,
-                payload: rpc::Payload::Control(control::Payload::EndReq(())),
+                payload: rpc::Payload::EndReq(()),
             }),
         };
 
@@ -62,19 +62,19 @@ impl ControlProxy for ControlProxyImpl {
         Ok(())
     }
 
-    async fn ping(&self) -> Result<control::PingRepBody, RPCError> {
+    async fn ping(&self) -> Result<rpc::PingRepBody, RPCError> {
         let id = self.gen_id();
 
         let message = Message {
-            content: message::Content::RPC(rpc::Content {
+            content: message::Payload::RPC(rpc::Message {
                 id,
-                payload: rpc::Payload::Control(control::Payload::PingReq(())),
+                payload: rpc::Payload::PingReq(()),
             }),
         };
 
         let receiver = self
             .router
-            .subscribe_control_rpc(id)
+            .subscribe_rpc(id)
             .map_err(|_| RPCError::TooManyInFlight)?;
 
         self.sink.lock().await.send(message).await?;

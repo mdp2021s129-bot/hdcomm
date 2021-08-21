@@ -11,22 +11,19 @@ use tokio::sync::{broadcast, oneshot};
 
 /// Listeners that are waiting for messages from the router.
 struct Listeners {
-    /// Destination for control messages received from the device.
-    control_rpc: HashMap<u16, oneshot::Sender<rpc::control::Payload>>,
-    /// Destination for application-level messsages received from the device.
-    application_rpc: HashMap<u16, oneshot::Sender<rpc::application::Payload>>,
+    /// Destination for RPC reply messages received from the device.
+    rpc: HashMap<u16, oneshot::Sender<rpc::Payload>>,
     /// Destination for application-level streaming messages received from the
     /// device.
-    application_stream: broadcast::Sender<stream::application::Payload>,
+    stream: broadcast::Sender<stream::Payload>,
 }
 
 impl Default for Listeners {
     fn default() -> Self {
-        let (application_stream, _) = broadcast::channel(1024);
+        let (stream, _) = broadcast::channel(1024);
         Self {
-            control_rpc: HashMap::new(),
-            application_rpc: HashMap::new(),
-            application_stream,
+            rpc: HashMap::new(),
+            stream,
         }
     }
 }
@@ -68,35 +65,16 @@ impl Router {
 
             match message {
                 Message {
-                    content: message::Content::RPC(rpc::Content { id, payload }),
-                } => match payload {
-                    rpc::Payload::Control(control_payload) => {
-                        if let Some(listener) =
-                            self.listeners.lock().unwrap().control_rpc.remove(&id)
-                        {
-                            listener.send(control_payload).ok();
-                        }
-                    }
-                    rpc::Payload::Application(app_payload) => {
-                        if let Some(listener) =
-                            self.listeners.lock().unwrap().application_rpc.remove(&id)
-                        {
-                            listener.send(app_payload).ok();
-                        }
-                    }
-                },
-                Message {
-                    content:
-                        message::Content::Stream(stream::Content {
-                            payload: stream::Payload::Application(app_payload),
-                        }),
+                    content: message::Payload::RPC(rpc::Message { id, payload }),
                 } => {
-                    self.listeners
-                        .lock()
-                        .unwrap()
-                        .application_stream
-                        .send(app_payload)
-                        .ok();
+                    if let Some(listener) = self.listeners.lock().unwrap().rpc.remove(&id) {
+                        listener.send(payload).ok();
+                    }
+                }
+                Message {
+                    content: message::Payload::Stream(stream::Message { payload }),
+                } => {
+                    self.listeners.lock().unwrap().stream.send(payload).ok();
                 }
             }
         }
@@ -118,12 +96,12 @@ impl RouterHandle {
         }
     }
 
-    /// Subscribe to a control RPC message with the given ID.
-    pub(crate) fn subscribe_control_rpc(
+    /// Subscribe to an RPC message with the given ID.
+    pub(crate) fn subscribe_rpc(
         &self,
         id: u16,
-    ) -> Result<oneshot::Receiver<rpc::control::Payload>, ()> {
-        match self.listeners.lock().unwrap().control_rpc.entry(id) {
+    ) -> Result<oneshot::Receiver<rpc::Payload>, ()> {
+        match self.listeners.lock().unwrap().rpc.entry(id) {
             Entry::Occupied(mut oe) => {
                 if oe.get().is_closed() {
                     let (tx, rx) = oneshot::channel();
@@ -141,37 +119,14 @@ impl RouterHandle {
         }
     }
 
-    /// Subscribe to a application RPC message with the given ID.
-    pub(crate) fn subscribe_application_rpc(
+    /// Subscribe to stream messagess.
+    pub(crate) fn subscribe_stream(
         &self,
-        id: u16,
-    ) -> Result<oneshot::Receiver<rpc::application::Payload>, ()> {
-        match self.listeners.lock().unwrap().application_rpc.entry(id) {
-            Entry::Occupied(mut oe) => {
-                if oe.get().is_closed() {
-                    let (tx, rx) = oneshot::channel();
-                    oe.insert(tx);
-                    Ok(rx)
-                } else {
-                    Err(())
-                }
-            }
-            Entry::Vacant(ve) => {
-                let (tx, rx) = oneshot::channel();
-                ve.insert(tx);
-                Ok(rx)
-            }
-        }
-    }
-
-    /// Subscribe to application stream messagess.
-    pub(crate) fn subscribe_application_stream(
-        &self,
-    ) -> broadcast::Receiver<stream::application::Payload> {
+    ) -> broadcast::Receiver<stream::Payload> {
         self.listeners
             .lock()
             .unwrap()
-            .application_stream
+            .stream
             .subscribe()
     }
 }
