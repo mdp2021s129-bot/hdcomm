@@ -4,7 +4,7 @@ use tokio_serial::{SerialPortBuilderExt, SerialStream};
 use tokio_util::codec::Framed;
 
 /// Type of the framed transport channel.
-pub(crate) type FramedChannel = Framed<SerialStream, Codec<256>>;
+pub(crate) type FramedChannel = Framed<SerialStream, Codec<{hdcomm_core::MAX_MESSAGE_LENGTH}>>;
 
 /// Creates a new framed transport channel using a given serial port and the
 /// provided baud rate.
