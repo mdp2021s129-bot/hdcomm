@@ -8,3 +8,5 @@ edition = "2018"
 [dependencies]
 postcard = { version = "0.7.2", features = ["default"] }
 hdcomm-core = { path = "../hdcomm-core" }
+heapless = "0.7.5"
+serde = { version = "1.0", default_features = false, features = ["derive"] }
