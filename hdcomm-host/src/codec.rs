@@ -46,26 +46,27 @@ impl<const N: usize> Decoder for Codec<N> {
     type Error = CodecError;
 
     fn decode(&mut self, src: &mut BytesMut) -> Result<Option<Self::Item>, Self::Error> {
-        let mut trim_at: Option<usize> = None;
+        let trim_at: usize;
         let ret = match self.decoder.feed::<Message>(src) {
-            FeedResult::Consumed => Ok(None),
+            FeedResult::Consumed => {
+                trim_at = src.len();
+                Ok(None)
+            }
             FeedResult::OverFull(remaining) => {
-                trim_at = Some(offset_from(remaining.as_ptr(), src.as_ptr()));
+                trim_at = offset_from(remaining.as_ptr(), src.as_ptr());
                 Err(Self::Error::FrameOverflow)
             }
             FeedResult::DeserError(remaining) => {
-                trim_at = Some(offset_from(remaining.as_ptr(), src.as_ptr()));
+                trim_at = offset_from(remaining.as_ptr(), src.as_ptr());
                 Err(Self::Error::Deserialization)
             }
             FeedResult::Success { data, remaining } => {
-                trim_at = Some(offset_from(remaining.as_ptr(), src.as_ptr()));
+                trim_at = offset_from(remaining.as_ptr(), src.as_ptr());
                 Ok(Some(data))
             }
         };
 
-        if let Some(idx) = trim_at {
-            src.advance(idx)
-        };
+        src.advance(trim_at);
 
         ret
     }
