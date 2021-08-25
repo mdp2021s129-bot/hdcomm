@@ -51,7 +51,7 @@ impl Proxy for ProxyImpl {
         let id = self.gen_id();
 
         let message = Message {
-            content: message::Payload::RPC(rpc::Message {
+            payload: message::Payload::RPC(rpc::Message {
                 id,
                 payload: rpc::Payload::EndReq(()),
             }),
@@ -66,7 +66,7 @@ impl Proxy for ProxyImpl {
         let id = self.gen_id();
 
         let message = Message {
-            content: message::Payload::RPC(rpc::Message {
+            payload: message::Payload::RPC(rpc::Message {
                 id,
                 payload: rpc::Payload::PingReq(()),
             }),
