@@ -40,7 +40,7 @@ impl ProxyImpl {
 
     fn gen_id(&self) -> u16 {
         let mut id = self.id.lock().unwrap();
-        *id += 1;
+        *id = id.wrapping_add(1);
         *id
     }
 }
