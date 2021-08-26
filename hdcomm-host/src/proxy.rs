@@ -27,7 +27,8 @@ remote_procedures!(
     ping, PingReqBody, PingRepBody;
     move_cmd, MoveReqBody, MoveRepBody;
     move_status, MoveStatusReqBody, MoveStatusRepBody;
-    move_cancel, MoveCancelReqBody, MoveCancelRepBody
+    move_cancel, MoveCancelReqBody, MoveCancelRepBody;
+    pid_param_update, PidParamUpdateReqBody, PidParamUpdateRepBody
 );
 
 /// `ProxyImpl` implements a RPC proxy.
@@ -108,5 +109,6 @@ remote_procedure_impl!(
     ping, Payload::PingReq, PingReqBody, Payload::PingRep, PingRepBody;
     move_cmd, Payload::MoveReq, MoveReqBody, Payload::MoveRep, MoveRepBody;
     move_status, Payload::MoveStatusReq, MoveStatusReqBody, Payload::MoveStatusRep, MoveStatusRepBody;
-    move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody
+    move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody;
+    pid_param_update, Payload::PidParamUpdateReq, PidParamUpdateReqBody, Payload::PidParamUpdateRep, PidParamUpdateRepBody
 );

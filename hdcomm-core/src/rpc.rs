@@ -29,6 +29,10 @@ pub enum Payload {
     /// Move cancel request.
     MoveCancelReq(MoveCancelReqBody),
     MoveCancelRep(MoveCancelRepBody),
+
+    /// PID parameters update request.
+    PidParamUpdateReq(PidParamUpdateReqBody),
+    PidParamUpdateRep(PidParamUpdateRepBody)
 }
 
 pub type PingReqBody = ();
@@ -91,3 +95,30 @@ pub enum MoveStatusRepBody {
 
 pub type MoveCancelReqBody = ();
 pub type MoveCancelRepBody = ();
+
+
+/// Pid parameters.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct PidParams {
+    pub kp: f32,
+    pub ki: f32,
+    pub kd: f32,
+    pub p_limit: f32,
+    pub i_limit: f32,
+    pub d_limit: f32,
+    pub output_limit: f32,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct PidParamUpdateReqBody {
+    /// Position tracking loop parameters.
+    ///
+    /// `[0]` is the left motor, & `[1]` is the right motor. 
+    pub params: [PidParams; 2],
+    /// Interval between control loop updates.
+    ///
+    /// In units of milliseconds.
+    pub update_interval_ms: u16
+}
+
+pub type PidParamUpdateRepBody = ();
