@@ -32,7 +32,7 @@ pub enum Payload {
 
     /// PID parameters update request.
     PidParamUpdateReq(PidParamUpdateReqBody),
-    PidParamUpdateRep(PidParamUpdateRepBody)
+    PidParamUpdateRep(PidParamUpdateRepBody),
 }
 
 pub type PingReqBody = ();
@@ -96,7 +96,6 @@ pub enum MoveStatusRepBody {
 pub type MoveCancelReqBody = ();
 pub type MoveCancelRepBody = ();
 
-
 /// Pid parameters.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct PidParams {
@@ -113,12 +112,12 @@ pub struct PidParams {
 pub struct PidParamUpdateReqBody {
     /// Position tracking loop parameters.
     ///
-    /// `[0]` is the left motor, & `[1]` is the right motor. 
+    /// `[0]` is the left motor, & `[1]` is the right motor.
     pub params: [PidParams; 2],
     /// Interval between control loop updates.
     ///
     /// In units of milliseconds.
-    pub update_interval_ms: u16
+    pub update_interval_ms: u16,
 }
 
 pub type PidParamUpdateRepBody = ();

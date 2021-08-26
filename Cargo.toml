@@ -11,3 +11,10 @@ members = [
     "hdcomm-device",
     "hdcomm-host",
 ]
+
+[dependencies]
+"hdcomm-core" = { path = "hdcomm-core" }
+"hdcomm-device" = { path = "hdcomm-device" }
+"hdcomm-host" = { path = "hdcomm-host" }
+tokio = { version = "1.10.0", features = ["full"] }
+s_curve_tiny = { git = "https://github.com/shenghaoyang/s_curve.git", branch = "big_no_std_hack" }
