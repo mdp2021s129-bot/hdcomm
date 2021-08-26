@@ -11,6 +11,8 @@ pub enum RPCError {
     Disconnected,
     #[error("too many RPCs in flight")]
     TooManyInFlight,
+    #[error("bad response")]
+    BadResponse,
     #[error("codec: {0}")]
     Codec(#[from] CodecError),
 }

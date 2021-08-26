@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 serde = { version = "1.0", default_features = false, features = ["derive"] }
+s_curve_tiny = { git = "https://github.com/shenghaoyang/s_curve.git", branch = "big_no_std_hack" }

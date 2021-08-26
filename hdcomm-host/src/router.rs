@@ -65,14 +65,14 @@ impl Router {
 
             match message {
                 Message {
-                    content: message::Payload::RPC(rpc::Message { id, payload }),
+                    payload: message::Payload::RPC(rpc::Message { id, payload }),
                 } => {
                     if let Some(listener) = self.listeners.lock().unwrap().rpc.remove(&id) {
                         listener.send(payload).ok();
                     }
                 }
                 Message {
-                    content: message::Payload::Stream(stream::Message { payload }),
+                    payload: message::Payload::Stream(stream::Message { payload }),
                 } => {
                     self.listeners.lock().unwrap().stream.send(payload).ok();
                 }

@@ -8,15 +8,27 @@ use async_trait::async_trait;
 use futures::stream::SplitSink;
 use futures::SinkExt;
 use hdcomm_core::message::{self, Message};
-use hdcomm_core::rpc;
+use hdcomm_core::rpc::{self, *};
 use std::sync::Arc;
 
-/// `Proxy` exposes RPC requests.
-#[async_trait]
-pub trait Proxy {
-    async fn ping(&self) -> Result<rpc::PingRepBody, RPCError>;
-    async fn end(&self) -> Result<(), RPCError>;
+/// Macro declaring remote procedures.
+macro_rules! remote_procedures {
+    (
+        $($name:ident, $request_body:path, $response_body:path);+
+    ) => {
+        #[async_trait]
+        pub trait Proxy: Clone {
+        $(async fn $name(&self, body: $request_body) -> Result<$response_body, RPCError>;)+
+        }
+    };
 }
+
+remote_procedures!(
+    ping, PingReqBody, PingRepBody;
+    move_cmd, MoveReqBody, MoveRepBody;
+    move_status, MoveStatusReqBody, MoveStatusRepBody;
+    move_cancel, MoveCancelReqBody, MoveCancelRepBody
+);
 
 /// `ProxyImpl` implements a RPC proxy.
 #[derive(Clone)]
@@ -45,43 +57,56 @@ impl ProxyImpl {
     }
 }
 
-#[async_trait]
-impl Proxy for ProxyImpl {
-    async fn end(&self) -> Result<(), RPCError> {
-        let id = self.gen_id();
+/// Macro defining a remote procedure.
+///
+/// - `name`: name of remote method
+/// - `request`: enum variant of RPC request
+/// - `request_body`: type of request body
+/// - `response`: enum variant of RPC response
+/// - `response_body`: type of response body.
+macro_rules! remote_procedure_impl {
+    (
+        $($name:ident, $request:path, $request_body:path, $response:path, $response_body:path);+
+    ) => {
+        #[async_trait]
+        impl Proxy for ProxyImpl {
+            $(async fn $name(&self, body: $request_body) -> Result<$response_body, RPCError> {
+                let id = self.gen_id();
 
-        let message = Message {
-            payload: message::Payload::RPC(rpc::Message {
-                id,
-                payload: rpc::Payload::EndReq(()),
-            }),
-        };
+                let message = Message {
+                    payload: message::Payload::RPC(rpc::Message {
+                        id,
+                        payload: $request(body),
+                    }),
+                };
 
-        self.sink.lock().await.send(message).await?;
+                // Being unable to subscribe can only becaused by having too many
+                // RPCs in flight.
+                let receiver = self
+                    .router
+                    .subscribe_rpc(id)
+                    .map_err(|_| RPCError::TooManyInFlight)?;
 
-        Ok(())
-    }
+                {
+                    let mut sink = self.sink.lock().await;
+                    sink.send(message).await?;
+                }
 
-    async fn ping(&self) -> Result<rpc::PingRepBody, RPCError> {
-        let id = self.gen_id();
+                // Receive errors here can only be the result of disconnection.
+                let response = receiver.await.map_err(|_| RPCError::Disconnected)?;
 
-        let message = Message {
-            payload: message::Payload::RPC(rpc::Message {
-                id,
-                payload: rpc::Payload::PingReq(()),
-            }),
-        };
-
-        let receiver = self
-            .router
-            .subscribe_rpc(id)
-            .map_err(|_| RPCError::TooManyInFlight)?;
-
-        self.sink.lock().await.send(message).await?;
-
-        // A receive error here can only be the result of disconnection.
-        receiver.await.map_err(|_| RPCError::Disconnected)?;
-
-        Ok(())
-    }
+                match response {
+                    $response(resp_body) => Ok(resp_body),
+                    _ => Err(RPCError::BadResponse),
+                }
+            })+
+        }
+    };
 }
+
+remote_procedure_impl!(
+    ping, Payload::PingReq, PingReqBody, Payload::PingRep, PingRepBody;
+    move_cmd, Payload::MoveReq, MoveReqBody, Payload::MoveRep, MoveRepBody;
+    move_status, Payload::MoveStatusReq, MoveStatusReqBody, Payload::MoveStatusRep, MoveStatusRepBody;
+    move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody
+);
