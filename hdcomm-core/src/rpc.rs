@@ -120,4 +120,10 @@ pub struct PidParamUpdateReqBody {
     pub update_interval_ms: u16,
 }
 
-pub type PidParamUpdateRepBody = ();
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub enum PidParamUpdateRepBody {
+    /// Pid parameters updated.
+    Updated,
+    /// Controller is busy with another move.
+    Busy,
+}
