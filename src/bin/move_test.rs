@@ -8,7 +8,7 @@ async fn synchronize(proxy: &impl Proxy) {
         match tokio::time::timeout(std::time::Duration::from_secs(1), proxy.ping(())).await {
             Err(_) => eprintln!("synchronize: timed out"),
             Ok(res) => {
-                if let Err(e) = res {
+                if let Err(_) = res {
                     eprintln!("synchronize: RPC error")
                 }
                 return;
@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let start_conditions = SCurveStartConditions {
         q0: 0.,
-        q1: 1440.,
+        q1: 10000.,
         v0: 0.,
         v1: 0.,
     };
@@ -45,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ref_left: false,
         ratio: 1.0,
         steering: 0.0,
-        steering_setup_ms: 0,
+        steering_setup_ms: 1000,
     };
     let time_required = req_body.time_required();
 
