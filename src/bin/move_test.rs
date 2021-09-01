@@ -46,6 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ratio: 1.0,
         steering: 0.0,
         steering_setup_ms: 1000,
+        reverse: true,
     };
     let time_required = req_body.time_required();
 

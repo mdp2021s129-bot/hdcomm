@@ -57,6 +57,8 @@ pub struct MoveReqBody {
     ///
     /// In units of milliseconds.
     pub steering_setup_ms: u16,
+    /// Whether this move should be done in reverse.
+    pub reverse: bool,
 }
 
 impl MoveReqBody {
