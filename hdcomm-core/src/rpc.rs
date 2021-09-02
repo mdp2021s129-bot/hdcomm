@@ -33,10 +33,23 @@ pub enum Payload {
     /// PID parameters update request.
     PidParamUpdateReq(PidParamUpdateReqBody),
     PidParamUpdateRep(PidParamUpdateRepBody),
+
+    /// Raw teleop request.
+    ///
+    /// Allows for direct control over steering servo and drive wheels.
+    RawTeleOpReq(RawTeleOpReqBody),
+    RawTeleOpRep(RawTeleOpRepBody),
 }
 
 pub type PingReqBody = ();
-pub type PingRepBody = ();
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct PingRepBody {
+    /// Time at the remote in milliseconds.
+    ///
+    /// All remote timestamps are relative to the start of the remote.
+    pub time_ms: u32,
+}
 
 /// Body of a move request.
 ///
@@ -85,9 +98,9 @@ pub type MoveStatusReqBody = ();
 pub enum MoveStatusRepBody {
     /// The robot is executing a move.
     Executing {
-        /// Elapsed move time.
+        /// Elapsed move time, in seconds.
         elapsed: f32,
-        /// Remaining time required for move to complete.
+        /// Remaining time required for move to complete (in seconds).
         remaining: f32,
     },
     /// The robot is not executing a move command, but its motors may still
@@ -127,5 +140,36 @@ pub enum PidParamUpdateRepBody {
     /// Pid parameters updated.
     Updated,
     /// Controller is busy with another move.
+    Busy,
+}
+
+/// Requests raw control over the robot's actuators.
+///
+/// Fields that are `None` means that the actuator corresponding to that
+/// field will be left in its original state.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct RawTeleOpReqBody {
+    /// Sets the steering to a given position.
+    ///
+    /// Range: `[-1, 1]`, where `-1` is full left deflection and `1` is full
+    /// right. `0` for neutral.
+    pub steering: Option<f32>,
+
+    /// Sets the left wheel's PWM duty cycle.
+    ///
+    /// Range `[-1, 1]`, where `-1` is 100% duty cycle, driving in reverse,
+    /// and `1` is 100% duty cycle, driving forwards.
+    pub wheel_l: Option<f32>,
+    /// Sets the right wheel's PWM duty cycle.
+    ///
+    /// See `wheel_l` for information about the range of values this can take.
+    pub wheel_r: Option<f32>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub enum RawTeleOpRepBody {
+    /// Actuator settings applied.
+    Applied,
+    /// Controller is busy with a move and cannot appply teleop settings.
     Busy,
 }

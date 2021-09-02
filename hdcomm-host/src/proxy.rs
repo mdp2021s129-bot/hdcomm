@@ -28,7 +28,8 @@ remote_procedures!(
     move_cmd, MoveReqBody, MoveRepBody;
     move_status, MoveStatusReqBody, MoveStatusRepBody;
     move_cancel, MoveCancelReqBody, MoveCancelRepBody;
-    pid_param_update, PidParamUpdateReqBody, PidParamUpdateRepBody
+    pid_param_update, PidParamUpdateReqBody, PidParamUpdateRepBody;
+    raw_teleop, RawTeleOpReqBody, RawTeleOpRepBody
 );
 
 /// `ProxyImpl` implements a RPC proxy.
@@ -110,5 +111,6 @@ remote_procedure_impl!(
     move_cmd, Payload::MoveReq, MoveReqBody, Payload::MoveRep, MoveRepBody;
     move_status, Payload::MoveStatusReq, MoveStatusReqBody, Payload::MoveStatusRep, MoveStatusRepBody;
     move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody;
-    pid_param_update, Payload::PidParamUpdateReq, PidParamUpdateReqBody, Payload::PidParamUpdateRep, PidParamUpdateRepBody
+    pid_param_update, Payload::PidParamUpdateReq, PidParamUpdateReqBody, Payload::PidParamUpdateRep, PidParamUpdateRepBody;
+    raw_teleop, Payload::RawTeleOpReq, RawTeleOpReqBody, Payload::RawTeleOpRep, RawTeleOpRepBody
 );
