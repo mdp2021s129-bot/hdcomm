@@ -112,7 +112,7 @@ pub type MoveCancelReqBody = ();
 pub type MoveCancelRepBody = ();
 
 /// Pid parameters.
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Default)]
 pub struct PidParams {
     pub kp: f32,
     pub ki: f32,
