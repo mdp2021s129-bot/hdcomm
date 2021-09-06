@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package hdcomm;
+
+service HdCommServer {
+    rpc Move (MoveRequest) returns (MoveResponse);
+}
+
+message MoveRequest {
+    // Index of radius in the indices array.
+    //
+    // `0` for straight moves.
+    int32 radius_indexed = 1;
+    // Distance to move.
+    //
+    // Specified in units of metres.
+    // Use negative distances for reversing.
+    double distance = 2;
+}
+
+message MoveResponse {
+    // Estimated time for move to complete.
+    //
+    // Specified in units of seconds.
+    double time_required = 1;
+}
+

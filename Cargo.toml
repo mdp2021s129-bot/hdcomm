@@ -20,3 +20,10 @@ tokio = { version = "1.10.0", features = ["full"] }
 s_curve_tiny = { git = "https://github.com/shenghaoyang/s_curve.git", branch = "big_no_std_hack" }
 clap = "2.33.3"
 serde = { version = "1.0.0", features = ["derive"] }
+thiserror = "1.0.26"
+log = "0.4"
+tonic = "0.5"
+prost = "0.8"
+
+[build-dependencies]
+tonic-build = "0.5"
