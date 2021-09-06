@@ -18,3 +18,5 @@ members = [
 "hdcomm-host" = { path = "hdcomm-host" }
 tokio = { version = "1.10.0", features = ["full"] }
 s_curve_tiny = { git = "https://github.com/shenghaoyang/s_curve.git", branch = "big_no_std_hack" }
+clap = "2.33.3"
+serde = { version = "1.0.0", features = ["derive"] }
