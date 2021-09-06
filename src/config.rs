@@ -34,32 +34,34 @@ pub struct Serial {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Model {
     /// Encoder counts per meter of movement.
-    pub counts_per_meter: f32,
+    pub counts_per_meter: f64,
     /// Distance between center of mass to the line connecting both rear
     /// wheels.
     ///
     /// In units of meters.
-    pub a2: f32,
+    pub a2: f64,
     /// Shortest distance between the line connecting both front wheels to the
     /// line connecting both rear wheels.
     ///
     /// In units of meters.
-    pub l: f32,
+    pub l: f64,
     /// Distance between the centers of both rear wheels.
     ///
     /// In units of meters.
-    pub w: f32,
+    pub w: f64,
     /// Available turn radii for the robot.
     pub turn_radii: Box<[TurnRadius]>,
+    /// Neutral steering control signal for the robot.
+    pub neutral_control: f64,
 }
 
 /// Turn radius specification.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct TurnRadius {
     /// Turn radius in meters.
-    pub radius: f32,
+    pub radius: f64,
     /// Servo control signal.
-    pub control: f32,
+    pub control: f64,
 }
 
 /// Motion control configuration.
