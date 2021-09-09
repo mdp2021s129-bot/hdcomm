@@ -8,10 +8,16 @@ package hdcomm;
 service HdComm {
     // Commands the robot to move.
     rpc Move (MoveRequest) returns (MoveResponse);
+    // Commands the robot to abort an ongoing move.
+    rpc MoveCancel (google.protobuf.Empty) returns (google.protobuf.Empty);
     // Pings the robot.
     rpc Ping (google.protobuf.Empty) returns (PingResponse);
     // Obtain a list of available turn radii.
     rpc GetRadii (google.protobuf.Empty) returns (RadiiResponse);
+    // Obtain the robot's heading.
+    rpc GetHeading (google.protobuf.Empty) returns (HeadingResponse);
+    // Obtain the front distance sensor's reading.
+    rpc GetFrontDistance (google.protobuf.Empty) returns (FrontDistanceResponse);
 }
 
 message MoveRequest {
@@ -45,4 +51,26 @@ message RadiiResponse {
     //
     // The first value is +inf for straight line motion.
     repeated double radii = 1;
+}
+
+message HeadingResponse {
+    // Device time, since start, corresponding to this reading.
+    //
+    // In units of seconds.
+    double device_time = 1;
+    // Robot heading.
+    double heading = 2;
+}
+
+message FrontDistanceResponse {
+    // Device time, since start, corresponding to the start of this reading.
+    double device_time_start = 1;
+    // Device time, since start, corresponding to the end of this reading.
+    double device_time_end = 2;
+    // Distance in metres.
+    //
+    // NaN if an error occurred.
+    // Distances beyond the maximum detection range are clamped to the maximum
+    // detection range.
+    double distance = 3;
 }
