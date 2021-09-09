@@ -3,6 +3,7 @@ use hdcomm_core::rpc::PidParams;
 use serde::{Deserialize, Serialize};
 
 /// hdcomm server configuration.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Config {
     /// gRPC server config.
     pub server: Server,
@@ -27,27 +28,27 @@ pub struct Serial {
     /// Serial port name.
     pub name: String,
     /// Serial port baud rate.
-    pub buad: u32,
+    pub baud: u32,
 }
 
 /// Robot model configuration.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Model {
-    /// Encoder counts per meter of movement.
-    pub counts_per_meter: f64,
+    /// Encoder counts per metre of movement.
+    pub counts_per_metre: f64,
     /// Distance between center of mass to the line connecting both rear
     /// wheels.
     ///
-    /// In units of meters.
+    /// In units of metres.
     pub a2: f64,
     /// Shortest distance between the line connecting both front wheels to the
     /// line connecting both rear wheels.
     ///
-    /// In units of meters.
+    /// In units of metres.
     pub l: f64,
     /// Distance between the centers of both rear wheels.
     ///
-    /// In units of meters.
+    /// In units of metres.
     pub w: f64,
     /// Available turn radii for the robot.
     pub turn_radii: Box<[TurnRadius]>,
@@ -58,7 +59,7 @@ pub struct Model {
 /// Turn radius specification.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct TurnRadius {
-    /// Turn radius in meters.
+    /// Turn radius in metres.
     pub radius: f64,
     /// Servo control signal.
     pub control: f64,

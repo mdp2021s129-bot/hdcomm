@@ -43,7 +43,7 @@ impl Model {
         let (ratio, ref_ticks, steering) = if straight {
             (
                 1.,
-                distance * self.model.counts_per_meter,
+                distance * self.model.counts_per_metre,
                 self.model.neutral_control,
             )
         } else {
