@@ -5,7 +5,7 @@ use s_curve::{SCurveConstraints, SCurveInput, SCurveParameters, SCurveStartCondi
 use thiserror::Error;
 
 #[derive(Clone, Debug, Error)]
-pub enum ModelError {
+pub enum Error {
     #[error("turn radius not supported")]
     RadiusNotSupported,
     #[error("motion profile limits must be positive")]
@@ -25,18 +25,21 @@ impl Model {
     /// Generate a move request for a given turn `radius` (in metres) and move
     /// `distance` (also in metres).
     ///
-    /// The radius is indexed and is negative for right turns, and positive for
-    /// left turns.
+    /// The radius is indexed and is negative for turns with the turn center
+    /// being on the right side of the robot, and positive for turns with the
+    /// turn center being on the left side of the robot.
     ///
     /// A radius of zero means a straight move.
     ///
-    /// Both `radius` and `distance` are measured from the center of mass of
+    /// The distance to move is measured from the center of mass of
     /// the robot.
     ///
     /// `steering_setup_ms` will be clamped to `0xffff` if the value specified
     /// in `steering_setup_time` exceeds `0xffff` milliseconds.
-    pub fn generate_move(&self, radius: i32, distance: f64) -> Result<MoveReqBody, ModelError> {
-        let ref_left = radius >= 0;
+    pub fn generate_move(&self, radius: i32, distance: f64) -> Result<MoveReqBody, Error> {
+        // True for right turns, false for left turns.
+        let ref_left = radius <= 0;
+        let left_turn = !ref_left;
         let straight = radius == 0;
         let reverse = distance < 0.;
 
@@ -47,24 +50,33 @@ impl Model {
                 self.model.neutral_control,
             )
         } else {
-            match self.model.turn_radii.get(radius.abs() as usize) {
+            match self
+                .model
+                .turn_radii
+                .get((radius.abs() as usize).saturating_sub(1))
+            {
                 Some(r) => {
                     let center_radius = r.radius;
-                    let control = r.control;
+                    let control = if left_turn {
+                        r.control_left
+                    } else {
+                        r.control_right
+                    };
 
                     let ref_radius = center_radius + (self.model.w / 2.);
                     let follower_radius = center_radius - (self.model.w / 2.);
                     let ratio = follower_radius / ref_radius;
 
                     let ticks =
-                        (distance * (ref_radius / center_radius)) * self.model.counts_per_meter;
+                        (distance * (ref_radius / center_radius)) * self.model.counts_per_metre;
 
                     (ratio, ticks, control)
                 }
-                None => return Err(ModelError::RadiusNotSupported),
+                None => return Err(Error::RadiusNotSupported),
             }
         };
 
+        // This is a saturating conversion to u16.
         let steering_setup_ms = (self.motion.steering_setup_time * 1e3) as u16;
 
         let constraints = SCurveConstraints {
@@ -103,9 +115,9 @@ impl Model {
         max_jerk: f64,
         max_accel: f64,
         max_velocity: f64,
-    ) -> Result<(), ModelError> {
+    ) -> Result<(), Error> {
         if (max_jerk <= 0.) || (max_accel <= 0.) || (max_velocity <= 0.) {
-            return Err(ModelError::ProfileLimitsNonPositive);
+            return Err(Error::ProfileLimitsNonPositive);
         }
 
         self.motion.max_jerk = max_jerk;

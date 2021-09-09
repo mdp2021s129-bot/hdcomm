@@ -61,8 +61,10 @@ pub struct Model {
 pub struct TurnRadius {
     /// Turn radius in metres.
     pub radius: f64,
-    /// Servo control signal.
-    pub control: f64,
+    /// Servo control signal for a left turn.
+    pub control_left: f64,
+    /// Servo control signal for a right turn.
+    pub control_right: f64,
 }
 
 /// Motion control configuration.
@@ -72,6 +74,10 @@ pub struct Motion {
     pub pid_left: PidParams,
     /// PID parameters for the right wheel's position control loop.
     pub pid_right: PidParams,
+    /// Position control loop update interval.
+    ///
+    /// In units of seconds.
+    pub pid_update_interval: f64,
     /// Max jerk in ms^-3.
     pub max_jerk: f64,
     /// Max acceleration in ms^-2.
