@@ -8,9 +8,12 @@ use async_trait::async_trait;
 use futures::stream::SplitSink;
 use futures::SinkExt;
 use hdcomm_core::message::{self, Message};
-use hdcomm_core::{rpc::{self, *}, stream};
-use tokio::sync::broadcast::Receiver;
+use hdcomm_core::{
+    rpc::{self, *},
+    stream,
+};
 use std::sync::Arc;
+use tokio::sync::broadcast::Receiver;
 
 /// Macro declaring remote procedures.
 macro_rules! remote_procedures {
@@ -30,7 +33,8 @@ remote_procedures!(
     move_status, MoveStatusReqBody, MoveStatusRepBody;
     move_cancel, MoveCancelReqBody, MoveCancelRepBody;
     pid_param_update, PidParamUpdateReqBody, PidParamUpdateRepBody;
-    raw_teleop, RawTeleOpReqBody, RawTeleOpRepBody
+    raw_teleop, RawTeleOpReqBody, RawTeleOpRepBody;
+    get_front_distance, FrontDistanceReqBody, FrontDistanceRepBody
 );
 
 /// `ProxyImpl` implements a RPC proxy.
@@ -118,5 +122,6 @@ remote_procedure_impl!(
     move_status, Payload::MoveStatusReq, MoveStatusReqBody, Payload::MoveStatusRep, MoveStatusRepBody;
     move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody;
     pid_param_update, Payload::PidParamUpdateReq, PidParamUpdateReqBody, Payload::PidParamUpdateRep, PidParamUpdateRepBody;
-    raw_teleop, Payload::RawTeleOpReq, RawTeleOpReqBody, Payload::RawTeleOpRep, RawTeleOpRepBody
+    raw_teleop, Payload::RawTeleOpReq, RawTeleOpReqBody, Payload::RawTeleOpRep, RawTeleOpRepBody;
+    get_front_distance, Payload::FrontDistanceReq, FrontDistanceReqBody, Payload::FrontDistanceRep, FrontDistanceRepBody
 );

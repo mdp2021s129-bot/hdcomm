@@ -94,7 +94,7 @@ impl HdComm for ServerImpl {
         }
     }
 
-    async fn move_cancel(&self, request: Request<()>) -> Result<Response<()>, tonic::Status> {
+    async fn move_cancel(&self, _: Request<()>) -> Result<Response<()>, tonic::Status> {
         log::info!("move_cancel() request");
 
         if let Err(e) = self.proxy.move_cancel(()).await {
@@ -139,6 +139,19 @@ impl HdComm for ServerImpl {
         &self,
         _: tonic::Request<()>,
     ) -> Result<Response<FrontDistanceResponse>, Status> {
-        Err(Status::unimplemented("not implemented"))
+        match self.proxy.get_front_distance(()).await {
+            Ok(rb) => Ok(Response::new(FrontDistanceResponse {
+                device_time_end: rb.end_time_ms as f64 / 1e3,
+                device_time_start: rb.start_time_ms as f64 / 1e3,
+                distance: match rb.distance {
+                    Some(d) => d as f64,
+                    None => f64::NAN
+                }
+            })),
+            Err(e) => {
+                log::warn!("hdcomm RPC error: {}", e);
+                Err(Status::internal(e.to_string()))
+            }
+        }
     }
 }
