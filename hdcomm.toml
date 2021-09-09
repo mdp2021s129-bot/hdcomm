@@ -1,0 +1,95 @@
+# gRPC server configuration.
+[server]
+# Listening port. The server listens on the wildcard IPv4 address
+# by default.
+port = 10002
+
+# hdcomm serial port configuration.
+[serial]
+# Serial port path.
+name = '/dev/ttyUSB0'
+# Serial port baud rate.
+# The 8N1 frame format will be used unconditionally.
+baud = 921600
+
+# Parameters used to model the robot.
+[model]
+# Encoder ticks per meter of movement.
+#
+# 30cm -> 2000 ticks, so ~666.67 ticks per meter.
+counts_per_metre = 6667.0
+# Distance between center of mass to the line connecting both
+# wheels.
+#
+# In units of metres.
+#
+# Measured to be 5.5cm. Needs to be altered if the vehicle's center of
+# mass changes!
+a2 = 5.5e-2
+# Shortest distance between the line connecting both front wheels to the
+# line connecting both rear wheels.
+#
+# In units of metres.
+#
+# Measured to be 14.3cm.
+l = 14.3e-2
+# Distance between the centers of both rear wheels.
+#
+# In units of metres.
+#
+# Measured to be 16cm.
+w = 16e-2
+# Available turn radii for the robot.
+turn_radii = [
+    {radius = 0.337, control_left = -0.35, control_right = 0.24}
+]
+# Neutral steering control signal.
+neutral_control = -0.1
+
+# Motion control parameters.
+
+# PID parameters for each drive wheel's position controller.
+[motion.pid_left]
+kp = 0.02
+ki = 0.00050
+kd = 0.0
+p_limit = 1.0
+i_limit = 1.0
+d_limit = 0.0
+output_limit = 1.0
+
+[motion.pid_right]
+kp = 0.02
+ki = 0.00050
+kd = 0.0
+p_limit = 1.0
+i_limit = 1.0
+d_limit = 0.0
+output_limit = 1.0
+
+[motion]
+# Position control loop update interval.
+#
+# In units of seconds.
+pid_update_interval = 0.01
+# Time delay for steering setup before the drive wheels start moving.
+#
+# In units of seconds.
+steering_setup_time = 1.0
+
+# Motion limits.
+#
+# The fastest moving wheel will not exceed these specified limits.
+
+# Max jerk.
+#
+# In units of ms^-3.
+max_jerk = 0.24
+# Max acceleration.
+#
+# In units of ms^-2.
+max_accel = 0.24
+# Max velocity.
+#
+# In units of ms^-1.
+max_velocity = 0.09
