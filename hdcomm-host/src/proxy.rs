@@ -34,7 +34,7 @@ remote_procedures!(
 
 /// `ProxyImpl` implements a RPC proxy.
 #[derive(Clone)]
-pub(crate) struct ProxyImpl {
+pub struct ProxyImpl {
     sink: Arc<tokio::sync::Mutex<SplitSink<FramedChannel, Message>>>,
     id: Arc<std::sync::Mutex<u16>>,
     router: RouterHandle,

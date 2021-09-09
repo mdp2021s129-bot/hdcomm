@@ -9,7 +9,7 @@ use futures::StreamExt;
 pub async fn connect(
     path: &str,
     baud_rate: u32,
-) -> Result<(router::Router, impl proxy::Proxy), tokio_serial::Error> {
+) -> Result<(router::Router, proxy::ProxyImpl), tokio_serial::Error> {
     let framed = channel::new(path, baud_rate).await?;
     let (sink, stream) = framed.split();
 
