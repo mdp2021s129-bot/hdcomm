@@ -24,6 +24,9 @@ message MoveRequest {
     // 0-based index of radius in the indices array.
     //
     // `0` for straight moves.
+    //
+    // Set negative to have the turning center on the left, positive to have
+    // the turning center on the right.
     int32 radius_indexed = 1;
     // Distance to move.
     //
