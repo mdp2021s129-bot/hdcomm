@@ -1,13 +1,21 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+import "google/protobuf/duration.proto";
+
 package hdcomm;
 
-service HdCommServer {
+service HdComm {
+    // Commands the robot to move.
     rpc Move (MoveRequest) returns (MoveResponse);
+    // Pings the robot.
+    rpc Ping (google.protobuf.Empty) returns (PingResponse);
+    // Obtain a list of available turn radii.
+    rpc GetRadii (google.protobuf.Empty) returns (RadiiResponse);
 }
 
 message MoveRequest {
-    // Index of radius in the indices array.
+    // 0-based index of radius in the indices array.
     //
     // `0` for straight moves.
     int32 radius_indexed = 1;
@@ -22,6 +30,19 @@ message MoveResponse {
     // Estimated time for move to complete.
     //
     // Specified in units of seconds.
-    double time_required = 1;
+    google.protobuf.Duration time_required = 1;
 }
 
+message PingResponse {
+    // Device time, since start.
+    //
+    // In units of seconds.
+    double device_time = 1;
+}
+
+message RadiiResponse {
+    // Array of available turn radii.
+    //
+    // The first value is +inf for straight line motion.
+    repeated double radii = 1;
+}
