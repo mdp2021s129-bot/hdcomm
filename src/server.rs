@@ -1,6 +1,6 @@
 use crate::config::Config;
 use crate::model::{Error as ModelError, Model};
-use hdcomm_core::rpc;
+use hdcomm_core::rpc::{self, PidParamUpdateReqBody};
 use hdcomm_host::proxy::{Proxy, ProxyImpl};
 use hdcomm_server::hd_comm_server::HdComm;
 use hdcomm_server::{
@@ -50,6 +50,17 @@ impl ServerImpl {
             model: config.model.clone(),
             motion: config.motion.clone(),
         };
+
+        proxy
+            .pid_param_update(PidParamUpdateReqBody {
+                params: [
+                    config.motion.pid_left.clone(),
+                    config.motion.pid_right.clone(),
+                ],
+                update_interval_ms: (config.motion.pid_update_interval * 1e3) as u16,
+            })
+            .await
+            .map_err(|_| Error::InitialParamUpload)?;
 
         Ok(Self {
             model,
@@ -145,8 +156,8 @@ impl HdComm for ServerImpl {
                 device_time_start: rb.start_time_ms as f64 / 1e3,
                 distance: match rb.distance {
                     Some(d) => d as f64,
-                    None => f64::NAN
-                }
+                    None => f64::NAN,
+                },
             })),
             Err(e) => {
                 log::warn!("hdcomm RPC error: {}", e);
