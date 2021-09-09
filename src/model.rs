@@ -80,9 +80,9 @@ impl Model {
         let steering_setup_ms = (self.motion.steering_setup_time * 1e3) as u16;
 
         let constraints = SCurveConstraints {
-            max_acceleration: self.motion.max_accel as f32,
-            max_jerk: self.motion.max_jerk as f32,
-            max_velocity: self.motion.max_velocity as f32,
+            max_acceleration: (self.motion.max_accel * self.model.counts_per_metre) as f32,
+            max_jerk: (self.motion.max_jerk * self.model.counts_per_metre) as f32,
+            max_velocity: (self.motion.max_velocity * self.model.counts_per_metre) as f32,
         };
 
         let start_conditions = SCurveStartConditions {
