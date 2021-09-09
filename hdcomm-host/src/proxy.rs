@@ -8,7 +8,8 @@ use async_trait::async_trait;
 use futures::stream::SplitSink;
 use futures::SinkExt;
 use hdcomm_core::message::{self, Message};
-use hdcomm_core::rpc::{self, *};
+use hdcomm_core::{rpc::{self, *}, stream};
+use tokio::sync::broadcast::Receiver;
 use std::sync::Arc;
 
 /// Macro declaring remote procedures.
@@ -56,6 +57,11 @@ impl ProxyImpl {
         let mut id = self.id.lock().unwrap();
         *id = id.wrapping_add(1);
         *id
+    }
+
+    /// Subscribe to stream messages from the device.
+    pub fn subscribe(&self) -> Receiver<stream::Payload> {
+        self.router.subscribe_stream()
     }
 }
 
