@@ -39,6 +39,10 @@ pub enum Payload {
     /// Allows for direct control over steering servo and drive wheels.
     RawTeleOpReq(RawTeleOpReqBody),
     RawTeleOpRep(RawTeleOpRepBody),
+
+    /// Front distance sensor reading request.
+    FrontDistanceReq(FrontDistanceReqBody),
+    FrontDistanceRep(FrontDistanceRepBody),
 }
 
 pub type PingReqBody = ();
@@ -172,4 +176,17 @@ pub enum RawTeleOpRepBody {
     Applied,
     /// Controller is busy with a move and cannot appply teleop settings.
     Busy,
+}
+
+pub type FrontDistanceReqBody = ();
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct FrontDistanceRepBody {
+    /// Measurement start time, as measured by the device.
+    pub start_time_ms: u32,
+    /// Measurement end time, as measured by the device.
+    pub end_time_ms: u32,
+    /// Distance measurement. `None` if an error occurred during measurement.
+    ///
+    /// In units of metres.
+    pub distance: Option<f32>,
 }
