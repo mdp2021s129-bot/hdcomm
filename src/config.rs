@@ -13,6 +13,8 @@ pub struct Config {
     pub model: Model,
     /// Motion control configuration.
     pub motion: Motion,
+    /// AHRS configuration.
+    pub ahrs: Ahrs,
 }
 
 /// gRPC Server configuration.
@@ -86,4 +88,34 @@ pub struct Motion {
     pub max_velocity: f64,
     /// Time delay for steering setup (seconds).
     pub steering_setup_time: f64,
+}
+
+/// AHRS configuration.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Ahrs {
+    /// ms^-2 per lsb of accelerometer readings.
+    pub acc_lsb: f64,
+    /// rads^-1 per lsb of gyroscope readings.
+    pub gyro_lsb: f64,
+    /// Tesla per lsb of magnetometer readings.
+    pub mag_lsb: f64,
+
+    /// expected AHRS sampling rate.
+    ///
+    /// In units of Hz.
+    pub sampling_rate: f64,
+
+    /// Madgwick filter Beta parameter.
+    pub beta: f64,
+
+    /// Magnetometer soft-iron correction.
+    ///
+    /// Expressed as a 3x3 matrix in column major order.
+    pub mag_soft_iron_correction: [f64; 9],
+    /// Magnetometer hard-iron correction.
+    ///
+    /// Expressed as a 1x3 matrix.
+    ///
+    /// In units of Tesla.
+    pub mag_hard_iron_correction: [f64; 3],
 }
