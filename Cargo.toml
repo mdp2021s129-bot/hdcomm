@@ -29,6 +29,8 @@ toml = "0.5.8"
 config = "0.11"
 prost-types = "0.8.0"
 env_logger = "0.9.0"
+ahrs = { git = "https://github.com/jmagnuson/ahrs-rs/", branch = "master" }
+nalgebra = "0.21"
 
 [build-dependencies]
 tonic-build = "0.5"

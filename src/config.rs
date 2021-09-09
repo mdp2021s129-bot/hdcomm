@@ -1,5 +1,6 @@
 /// hdcomm configuration.
 use hdcomm_core::rpc::PidParams;
+use nalgebra::{Matrix1x3, Matrix3};
 use serde::{Deserialize, Serialize};
 
 /// hdcomm server configuration.
@@ -118,4 +119,16 @@ pub struct Ahrs {
     ///
     /// In units of Tesla.
     pub mag_hard_iron_correction: [f64; 3],
+}
+
+impl Ahrs {
+    /// Obtain the soft iron correction matrix.
+    pub fn soft_iron_correction(&self) -> Matrix3<f64> {
+        Matrix3::from_column_slice(&self.mag_soft_iron_correction)
+    }
+
+    /// Obtain the hard iron correction vector.
+    pub fn hard_iron_correction(&self) -> Matrix1x3<f64> {
+        Matrix1x3::from_column_slice(&self.mag_hard_iron_correction)
+    }
 }

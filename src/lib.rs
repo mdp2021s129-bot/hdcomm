@@ -1,3 +1,4 @@
+pub mod ahrs;
 /// Host to device communication proxy.
 ///
 /// Provides a gRPC interface for the hdcomm protocol.
