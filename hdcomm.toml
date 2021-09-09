@@ -99,7 +99,7 @@ max_velocity = 0.09
 # ms^-2 per lsb of accelerometer reading.
 acc_lsb = 0.0005987731559190649
 # rads^-1 per lsb of gyroscope reading.
-gyro_lsb = 0.04793836258415163
+gyro_lsb = 0.00013316211828931008
 # Tesla per lsb of magnetometer reading.
 mag_lsb = 0.015e-6
 # expected AHRS sampling rate.
