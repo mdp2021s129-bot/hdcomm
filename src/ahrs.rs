@@ -35,8 +35,9 @@ impl Sample {
         let acc = Vector3::from_iterator(raw.acc.iter().map(|a| *a as f64 * config.acc_lsb));
         let gyro = Vector3::from_iterator(raw.gyro.iter().map(|g| *g as f64 * config.gyro_lsb));
         let mag = {
-            let mut out =
-                Matrix1x3::from_iterator(raw.mag.iter().map(|m| *m as f64 * config.mag_lsb));
+            let mut out = Matrix1x3::from_iterator(raw.mag.iter().map(|m| *m as f64));
+            out.component_mul_assign(&config.sensitivity_adjustment());
+            out *= config.mag_lsb;
             out -= config.hard_iron_correction();
             out *= config.soft_iron_correction();
             out.swap((0, 0), (0, 1));

@@ -109,6 +109,9 @@ pub struct Ahrs {
     /// Madgwick filter Beta parameter.
     pub beta: f64,
 
+    /// Magnetometer sensitivity adjustment factor.
+    pub mag_sensitivity_adjustment: [f64; 3],
+
     /// Magnetometer soft-iron correction.
     ///
     /// Expressed as a 3x3 matrix in column major order.
@@ -130,5 +133,10 @@ impl Ahrs {
     /// Obtain the hard iron correction vector.
     pub fn hard_iron_correction(&self) -> Matrix1x3<f64> {
         Matrix1x3::from_column_slice(&self.mag_hard_iron_correction)
+    }
+
+    /// Obtain the magnetometer sensitivity adjustment factor.
+    pub fn sensitivity_adjustment(&self) -> Matrix1x3<f64> {
+        Matrix1x3::from_column_slice(&self.mag_sensitivity_adjustment)
     }
 }
