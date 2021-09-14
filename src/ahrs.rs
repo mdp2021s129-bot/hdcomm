@@ -95,11 +95,10 @@ impl Filter {
     /// Update the filter with a new raw sensor reading.
     pub fn update(&mut self, raw: &AhrsBody) {
         let sample = Sample::new(&self.config, raw);
-        if let Err(e) = self.filter.update_imu(&sample.gyro, &sample.acc) {
+        if let Err(e) = self.filter.update(&sample.gyro, &sample.acc, &sample.mag) {
             log::warn!("filter update: {} (sample dropped)", e);
             return;
         }
-        //self.filter.update(&sample.gyro, &sample.acc, &sample.mag).unwrap();
         self.last_update_time_device = Some(sample.timestamp);
     }
 
