@@ -41,10 +41,10 @@ l = 14.3e-2
 w = 16e-2
 # Available turn radii for the robot.
 turn_radii = [
-    {radius = 0.337, control_left = -0.35, control_right = 0.24}
+    {radius = 0.337, control_left = -0.37, control_right = 0.24}
 ]
 # Neutral steering control signal.
-neutral_control = -0.1
+neutral_control = -0.11
 
 # Motion control parameters.
 
@@ -68,6 +68,8 @@ d_limit = 0.0
 output_limit = 1.0
 
 [motion]
+# Default motion control parameters.
+
 # Position control loop update interval.
 #
 # In units of seconds.
@@ -108,16 +110,19 @@ mag_lsb = 0.015e-6
 sampling_rate = 100
 # Madgwick filter Beta parameter.
 beta = 0.1
+# Magnetometer sensitivity adjustments.
+# Expressed as a 1x3 matrix.
+mag_sensitivity_adjustments = [1.1914, 1.1914, 1.1484]
 # Magnetometer soft-iron correction.
 # Expressed as a 3x3 matrix in column major order.
 mag_soft_iron_correction = [
-    1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 0.0, 1.0
+     1.0833, -0.0807, -0.0085,
+    -0.0807,  1.2000, -0.0273,
+    -0.0085, -0.0273,  0.7739
 ]
 # Magnetometer hard-iron correction.
 #
 # Expressed as a 1x3 matrix.
 #
 # In units of Tesla.
-mag_hard_iron_correction = [0.0, 0.0, 0.0]
+mag_hard_iron_correction = [0.6117e-5, 0.1207e-5, -0.2548e-5]
