@@ -42,6 +42,7 @@ impl Model {
         let left_turn = !ref_left;
         let straight = radius == 0;
         let reverse = distance < 0.;
+        let distance = distance.abs();
 
         let (ratio, ref_ticks, steering) = if straight {
             (
