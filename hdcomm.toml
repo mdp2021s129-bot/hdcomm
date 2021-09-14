@@ -112,7 +112,7 @@ sampling_rate = 100
 beta = 0.1
 # Magnetometer sensitivity adjustments.
 # Expressed as a 1x3 matrix.
-mag_sensitivity_adjustments = [1.1914, 1.1914, 1.1484]
+mag_sensitivity_adjustment = [1.1914, 1.1914, 1.1484]
 # Magnetometer soft-iron correction.
 # Expressed as a 3x3 matrix in column major order.
 mag_soft_iron_correction = [
