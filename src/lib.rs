@@ -5,3 +5,4 @@ pub mod ahrs;
 pub mod config;
 pub mod model;
 pub mod server;
+pub mod stream;

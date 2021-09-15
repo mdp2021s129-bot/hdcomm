@@ -1,5 +1,6 @@
 use crate::config::Config;
 use crate::model::{Error as ModelError, Model};
+use crate::stream::Processor;
 use hdcomm_core::rpc::{self, PidParamUpdateReqBody};
 use hdcomm_host::proxy::{Proxy, ProxyImpl};
 use hdcomm_server::hd_comm_server::HdComm;
@@ -7,6 +8,7 @@ use hdcomm_server::{
     FrontDistanceResponse, HeadingResponse, MoveRequest, MoveResponse, PingResponse, RadiiResponse,
 };
 use prost_types::Duration as GrpcDuration;
+use std::sync::Arc;
 use std::time::Duration;
 use thiserror::Error;
 use tokio::task::JoinHandle;
@@ -35,6 +37,10 @@ pub struct ServerImpl {
     router_handle: JoinHandle<()>,
     /// Host -> device RPC proxy.
     proxy: ProxyImpl,
+    /// Stream processor.
+    sp: Arc<Processor>,
+    /// Stream processor join handle.
+    sp_handle: JoinHandle<()>,
 }
 
 impl ServerImpl {
@@ -51,6 +57,12 @@ impl ServerImpl {
             motion: config.motion.clone(),
         };
 
+        let sp = Arc::new(Processor::new(proxy.subscribe(), &config));
+        let sp_handle = {
+            let sp = sp.clone();
+            tokio::spawn(async move { sp.run().await })
+        };
+
         proxy
             .pid_param_update(PidParamUpdateReqBody {
                 params: [
@@ -62,12 +74,25 @@ impl ServerImpl {
             .await
             .map_err(|_| Error::InitialParamUpload)?;
 
+        log::info!("sent PID parameters");
+
         Ok(Self {
             model,
             config,
             router_handle,
             proxy,
+            sp,
+            sp_handle,
         })
+    }
+}
+
+impl Drop for ServerImpl {
+    /// A custom Drop implementation is provided that destroys all background
+    /// tasks associated with the server.
+    fn drop(&mut self) {
+        self.router_handle.abort();
+        self.sp_handle.abort();
     }
 }
 
@@ -143,7 +168,16 @@ impl HdComm for ServerImpl {
         &self,
         _: tonic::Request<()>,
     ) -> Result<Response<HeadingResponse>, Status> {
-        Err(Status::unimplemented("not implemented"))
+        let reading = self.sp.orientation();
+        let timestamp = match reading.timestamp {
+            Some(ts) => ts,
+            None => f64::NAN,
+        };
+
+        Ok(Response::new(HeadingResponse {
+            device_time: timestamp,
+            heading: reading.yaw,
+        }))
     }
 
     async fn get_front_distance(
