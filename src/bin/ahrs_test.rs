@@ -1,5 +1,6 @@
 use hdcomm::config::Config;
 use hdcomm_core::stream::Payload;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -19,9 +20,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
         let msg = stream.recv().await?;
+        let ts = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs_f64();
         let Payload::Ahrs(raw) = msg;
         filter.update(&raw);
-        println!("Orientation: {:?}", filter.euler_angles());
+        println!("{}, {}", ts, filter.euler_angles().yaw);
     }
 
     Ok(())
