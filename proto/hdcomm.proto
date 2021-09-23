@@ -12,6 +12,8 @@ service HdComm {
     rpc MoveCancel (google.protobuf.Empty) returns (google.protobuf.Empty);
     // Pings the robot.
     rpc Ping (google.protobuf.Empty) returns (PingResponse);
+    // Retrieves the current move status.
+    rpc GetMoveStatus (google.protobuf.Empty) returns (MoveStatusResponse);
     // Obtain a list of available turn radii.
     rpc GetRadii (google.protobuf.Empty) returns (RadiiResponse);
     // Obtain the robot's heading.
@@ -47,6 +49,19 @@ message PingResponse {
     //
     // In units of seconds.
     double device_time = 1;
+}
+
+message MoveStatusResponse {
+    // Move status.
+    message MoveStatus {
+        // Elapsed time for current move (in seconds).
+        double elpased = 1;
+        // Remaining time for current move (in seconds).
+        double remaining = 2;
+    }
+
+    // Move status. Not present if the robot is not executing a move.
+    optional MoveStatus status = 1;
 }
 
 message RadiiResponse {
