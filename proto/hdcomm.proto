@@ -55,7 +55,7 @@ message MoveStatusResponse {
   // Move status.
   message MoveStatus {
     // Elapsed time for current move (in seconds).
-    double elpased = 1;
+    double elapsed = 1;
     // Remaining time for current move (in seconds).
     double remaining = 2;
   }
