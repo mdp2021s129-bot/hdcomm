@@ -6,89 +6,89 @@ import "google/protobuf/duration.proto";
 package hdcomm;
 
 service HdComm {
-    // Commands the robot to move.
-    rpc Move (MoveRequest) returns (MoveResponse);
-    // Commands the robot to abort an ongoing move.
-    rpc MoveCancel (google.protobuf.Empty) returns (google.protobuf.Empty);
-    // Pings the robot.
-    rpc Ping (google.protobuf.Empty) returns (PingResponse);
-    // Retrieves the current move status.
-    rpc GetMoveStatus (google.protobuf.Empty) returns (MoveStatusResponse);
-    // Obtain a list of available turn radii.
-    rpc GetRadii (google.protobuf.Empty) returns (RadiiResponse);
-    // Obtain the robot's heading.
-    rpc GetHeading (google.protobuf.Empty) returns (HeadingResponse);
-    // Obtain the front distance sensor's reading.
-    rpc GetFrontDistance (google.protobuf.Empty) returns (FrontDistanceResponse);
+  // Commands the robot to move.
+  rpc Move(MoveRequest) returns (MoveResponse);
+  // Commands the robot to abort an ongoing move.
+  rpc MoveCancel(google.protobuf.Empty) returns (google.protobuf.Empty);
+  // Pings the robot.
+  rpc Ping(google.protobuf.Empty) returns (PingResponse);
+  // Retrieves the current move status.
+  rpc GetMoveStatus(google.protobuf.Empty) returns (MoveStatusResponse);
+  // Obtain a list of available turn radii.
+  rpc GetRadii(google.protobuf.Empty) returns (RadiiResponse);
+  // Obtain the robot's heading.
+  rpc GetHeading(google.protobuf.Empty) returns (HeadingResponse);
+  // Obtain the front distance sensor's reading.
+  rpc GetFrontDistance(google.protobuf.Empty) returns (FrontDistanceResponse);
 }
 
 message MoveRequest {
-    // 0-based index of radius in the indices array.
-    //
-    // `0` for straight moves.
-    //
-    // Set negative to have the turning center on the left, positive to have
-    // the turning center on the right.
-    int32 radius_indexed = 1;
-    // Distance to move.
-    //
-    // Specified in units of metres.
-    // Use negative distances for reversing.
-    double distance = 2;
+  // 0-based index of radius in the indices array.
+  //
+  // `0` for straight moves.
+  //
+  // Set negative to have the turning center on the left, positive to have
+  // the turning center on the right.
+  int32 radius_indexed = 1;
+  // Distance to move.
+  //
+  // Specified in units of metres.
+  // Use negative distances for reversing.
+  double distance = 2;
 }
 
 message MoveResponse {
-    // Estimated time for move to complete.
-    //
-    // Specified in units of seconds.
-    google.protobuf.Duration time_required = 1;
+  // Estimated time for move to complete.
+  //
+  // Specified in units of seconds.
+  google.protobuf.Duration time_required = 1;
 }
 
 message PingResponse {
-    // Device time, since start.
-    //
-    // In units of seconds.
-    double device_time = 1;
+  // Device time, since start.
+  //
+  // In units of seconds.
+  double device_time = 1;
 }
 
 message MoveStatusResponse {
-    // Move status.
-    message MoveStatus {
-        // Elapsed time for current move (in seconds).
-        double elpased = 1;
-        // Remaining time for current move (in seconds).
-        double remaining = 2;
-    }
+  // Move status.
+  message MoveStatus {
+    // Elapsed time for current move (in seconds).
+    double elpased = 1;
+    // Remaining time for current move (in seconds).
+    double remaining = 2;
+  }
 
-    // Move status. Not present if the robot is not executing a move.
-    optional MoveStatus status = 1;
+  // Move status. Not present if the robot is not executing a move.
+  optional MoveStatus status = 1;
 }
 
 message RadiiResponse {
-    // Array of available turn radii.
-    //
-    // The first value is +inf for straight line motion.
-    repeated double radii = 1;
+  // Array of available turn radii.
+  //
+  // The first value is +inf for straight line motion.
+  repeated double radii = 1;
 }
 
 message HeadingResponse {
-    // Device time, since start, corresponding to this reading.
-    //
-    // In units of seconds.
-    double device_time = 1;
-    // Robot heading.
-    double heading = 2;
+  // Device time, since start, corresponding to this reading.
+  //
+  // In units of seconds.
+  double device_time = 1;
+  // Robot heading.
+  double heading = 2;
 }
 
 message FrontDistanceResponse {
-    // Device time, since start, corresponding to the start of this reading.
-    double device_time_start = 1;
-    // Device time, since start, corresponding to the end of this reading.
-    double device_time_end = 2;
-    // Distance in metres.
-    //
-    // NaN if an error occurred.
-    // Distances beyond the maximum detection range are clamped to the maximum
-    // detection range.
-    double distance = 3;
+  // Device time, since start, corresponding to the start of this reading.
+  double device_time_start = 1;
+  // Device time, since start, corresponding to the end of this reading.
+  double device_time_end = 2;
+  // Distance in metres.
+  //
+  // NaN if an error occurred.
+  // Distances beyond the maximum detection range are clamped to the maximum
+  // detection range.
+  double distance = 3;
 }
