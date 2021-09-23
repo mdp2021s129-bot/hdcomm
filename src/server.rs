@@ -1,11 +1,12 @@
 use crate::config::Config;
 use crate::model::{Error as ModelError, Model};
 use crate::stream::Processor;
-use hdcomm_core::rpc::{self, PidParamUpdateReqBody};
+use hdcomm_core::rpc::{self, MoveStatusRepBody, PidParamUpdateReqBody};
 use hdcomm_host::proxy::{Proxy, ProxyImpl};
 use hdcomm_server::hd_comm_server::HdComm;
 use hdcomm_server::{
-    FrontDistanceResponse, HeadingResponse, MoveRequest, MoveResponse, PingResponse, RadiiResponse,
+    move_status_response, FrontDistanceResponse, HeadingResponse, MoveRequest, MoveResponse,
+    MoveStatusResponse, PingResponse, RadiiResponse,
 };
 use prost_types::Duration as GrpcDuration;
 use std::sync::Arc;
@@ -147,6 +148,29 @@ impl HdComm for ServerImpl {
         match self.proxy.ping(()).await {
             Ok(rb) => Ok(Response::new(PingResponse {
                 device_time: rb.time_ms as f64 / 1e3,
+            })),
+            Err(e) => {
+                log::warn!("hdcomm RPC error: {}", e);
+                Err(Status::internal(e.to_string()))
+            }
+        }
+    }
+
+    async fn get_move_status(
+        &self,
+        _: Request<()>,
+    ) -> Result<Response<MoveStatusResponse>, Status> {
+        log::info!("move_status() request");
+
+        match self.proxy.move_status(()).await {
+            Ok(ms) => Ok(Response::new(match ms {
+                MoveStatusRepBody::Executing { elapsed, remaining } => MoveStatusResponse {
+                    status: Some(move_status_response::MoveStatus {
+                        elapsed: elapsed as f64,
+                        remaining: remaining as f64,
+                    }),
+                },
+                MoveStatusRepBody::NoCommand => MoveStatusResponse { status: None },
             })),
             Err(e) => {
                 log::warn!("hdcomm RPC error: {}", e);
