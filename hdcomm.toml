@@ -41,29 +41,29 @@ l = 14.3e-2
 w = 16e-2
 # Available turn radii for the robot.
 turn_radii = [
-    {radius = 0.337, control_left = -0.37, control_right = 0.24}
+    {radius = 0.337, control_left = -0.46, control_right = 0.24}
 ]
 # Neutral steering control signal.
-neutral_control = -0.11
+neutral_control = -0.104
 
 # Motion control parameters.
 
 # PID parameters for each drive wheel's position controller.
 [motion.pid_left]
-kp = 0.02
-ki = 0.00030
+kp = 0.01
+ki = 0.00005
 kd = 0.0
 p_limit = 1.0
-i_limit = 1.0
+i_limit = 0.3
 d_limit = 0.0
 output_limit = 1.0
 
 [motion.pid_right]
-kp = 0.02
-ki = 0.00030
+kp = 0.01
+ki = 0.00005
 kd = 0.0
 p_limit = 1.0
-i_limit = 1.0
+i_limit = 0.3
 d_limit = 0.0
 output_limit = 1.0
 
@@ -86,15 +86,15 @@ steering_setup_time = 1.0
 # Max jerk.
 #
 # In units of ms^-3.
-max_jerk = 0.24
+max_jerk = 0.20
 # Max acceleration.
 #
 # In units of ms^-2.
-max_accel = 0.24
+max_accel = 0.20
 # Max velocity.
 #
 # In units of ms^-1.
-max_velocity = 0.09
+max_velocity = 0.40
 
 # AHRS configuration.
 [ahrs]
