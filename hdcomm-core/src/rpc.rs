@@ -43,6 +43,10 @@ pub enum Payload {
     /// Front distance sensor reading request.
     FrontDistanceReq(FrontDistanceReqBody),
     FrontDistanceRep(FrontDistanceRepBody),
+
+    /// VIN voltage reading request.
+    VinReadingReq(VinReadingReqBody),
+    VinReadingRep(VinReadingRepBody),
 }
 
 pub type PingReqBody = ();
@@ -189,4 +193,15 @@ pub struct FrontDistanceRepBody {
     ///
     /// In units of metres.
     pub distance: Option<f32>,
+}
+
+pub type VinReadingReqBody = ();
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct VinReadingRepBody {
+    /// Measurement time as measured by the device.
+    pub time_ms: u32,
+
+    /// Measured voltage in volts.
+    pub vin: f32,
 }
