@@ -34,7 +34,8 @@ remote_procedures!(
     move_cancel, MoveCancelReqBody, MoveCancelRepBody;
     pid_param_update, PidParamUpdateReqBody, PidParamUpdateRepBody;
     raw_teleop, RawTeleOpReqBody, RawTeleOpRepBody;
-    get_front_distance, FrontDistanceReqBody, FrontDistanceRepBody
+    get_front_distance, FrontDistanceReqBody, FrontDistanceRepBody;
+    get_vin_reading, VinReadingReqBody, VinReadingRepBody
 );
 
 /// `ProxyImpl` implements a RPC proxy.
@@ -123,5 +124,6 @@ remote_procedure_impl!(
     move_cancel, Payload::MoveCancelReq, MoveCancelReqBody, Payload::MoveCancelRep, MoveCancelRepBody;
     pid_param_update, Payload::PidParamUpdateReq, PidParamUpdateReqBody, Payload::PidParamUpdateRep, PidParamUpdateRepBody;
     raw_teleop, Payload::RawTeleOpReq, RawTeleOpReqBody, Payload::RawTeleOpRep, RawTeleOpRepBody;
-    get_front_distance, Payload::FrontDistanceReq, FrontDistanceReqBody, Payload::FrontDistanceRep, FrontDistanceRepBody
+    get_front_distance, Payload::FrontDistanceReq, FrontDistanceReqBody, Payload::FrontDistanceRep, FrontDistanceRepBody;
+    get_vin_reading, Payload::VinReadingReq, VinReadingReqBody, Payload::VinReadingRep, VinReadingRepBody
 );
