@@ -20,6 +20,8 @@ service HdComm {
   rpc GetHeading(google.protobuf.Empty) returns (HeadingResponse);
   // Obtain the front distance sensor's reading.
   rpc GetFrontDistance(google.protobuf.Empty) returns (FrontDistanceResponse);
+  // Obtain the VIN bus' voltage.
+  rpc GetVinReading(google.protobuf.Empty) returns (VinReadingResponse);
 }
 
 message MoveRequest {
@@ -91,4 +93,15 @@ message FrontDistanceResponse {
   // Distances beyond the maximum detection range are clamped to the maximum
   // detection range.
   double distance = 3;
+}
+
+message VinReadingResponse {
+  // Device time, since start, corresponding to this reading.
+  //
+  // In units of seconds.
+  double device_time = 1;
+  // Voltage of the VIN bus.
+  //
+  // In units of volts.
+  double voltage = 2;
 }
