@@ -6,7 +6,7 @@ use hdcomm_host::proxy::{Proxy, ProxyImpl};
 use hdcomm_server::hd_comm_server::HdComm;
 use hdcomm_server::{
     move_status_response, FrontDistanceResponse, HeadingResponse, MoveRequest, MoveResponse,
-    MoveStatusResponse, PingResponse, RadiiResponse,
+    MoveStatusResponse, PingResponse, RadiiResponse, VinReadingResponse,
 };
 use prost_types::Duration as GrpcDuration;
 use std::sync::Arc;
@@ -216,6 +216,22 @@ impl HdComm for ServerImpl {
                     Some(d) => d as f64,
                     None => f64::NAN,
                 },
+            })),
+            Err(e) => {
+                log::warn!("hdcomm RPC error: {}", e);
+                Err(Status::internal(e.to_string()))
+            }
+        }
+    }
+
+    async fn get_vin_reading(
+        &self,
+        _: tonic::Request<()>,
+    ) -> Result<Response<VinReadingResponse>, Status> {
+        match self.proxy.get_vin_reading(()).await {
+            Ok(rb) => Ok(Response::new(VinReadingResponse {
+                device_time: rb.time_ms as f64 / 1e3,
+                voltage: rb.vin as f64,
             })),
             Err(e) => {
                 log::warn!("hdcomm RPC error: {}", e);
